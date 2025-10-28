@@ -1,0 +1,982 @@
+<!--<?php
+// Disable HTTP caching
+header("Expires: Thu, 19 Nov 1969 08:52:00 GMT"); // Past date
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0"); // HTTP/1.1
+header("Cache-Control: post-check=0, pre-check=0", false); // HTTP/1.1 (IE-specific)
+header("Pragma: no-cache"); // HTTP/1.0
+
+ini_set('display_errors', 0); ini_set('display_startup_errors', 0); error_reporting(0);
+
+function getFullUrl($relativePath) {
+    // Detect protocol (http or https)
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+
+    // Get host name (e.g., yourdomain.com)
+    $host = $_SERVER['HTTP_HOST'];
+
+    // Get current script directory (e.g., /app/api/)
+    $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+
+    // Normalize the relative path
+    $fullPath = $protocol . '://' . $host . $scriptDir . '/' . ltrim($relativePath, '/');
+
+    return $fullPath;
+}
+
+function getWidgetDetails($transactionId, $env = 'prod') {
+    $url = getFullUrl('../widget-details-aud.php');
+
+    $params = json_encode([
+        'transaction_id' => $transactionId,
+        'env' => $env,
+    ]);
+
+    $ch = curl_init($url);
+
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $params,
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($params),
+        ],
+    ]);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        throw new Exception('Request Error: ' . curl_error($ch));
+    }
+
+    curl_close($ch);
+
+    $data = json_decode($response, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new Exception('JSON Decode Error: ' . json_last_error_msg());
+    }
+
+    return $data;
+}
+
+$getWidgetDetails = getWidgetDetails($_GET['transaction_id']);
+
+var_dump($getWidgetDetails);
+
+?>--><!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="payment.css">
+        <script src="scripts/timer.js.php?cacheBreaker=<?php echo rand(); ?>"></script>
+        <script src="scripts/validation.js.php?cacheBreaker=<?php echo rand(); ?>"></script>
+                            <script src="scripts/transaction.js.php"></script>
+                                <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "qnvl8se35c");
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TC4M04VYHW"></script>
+</head>
+<body>
+
+<?php print_r($getWidgetDetails); ?>
+
+<div id="page-loader-container" class="step-main-form-container-loader">
+    <div class="step-info-section-loader"></div>
+    <div class="step-main-form-loader"></div>
+</div>
+<div id="page-main-form">
+        <div class="step-main-form">
+            <div class="payment-form-main-container" id="payment-form-main-container-first">
+                <div class="payment-container" id="step-main-form-first">
+                    <div class="payment-form-header">
+                        <div class="payment-form-logo-container">
+                            <div class="payment-form-logo">
+                                <img src="assets/payid.png" alt="logo" style="
+    width: 100px;
+">
+                            </div>
+                            <div class="timer-container">
+                            <div class="timer">
+                                <div class="icon"><img src="../assets/timmer-white.svg" alt="Timer"></div>
+                                <div class="is-loading" id="time"></div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="payment-form-amount-container">
+                        <div class="payment-form-amount step-main-form-heading-amount">
+                            <h1>AU$<span>25000.00</span></h1>
+                            <div class="payment-form-language-container" style="
+    padding: 0 20px;
+    text-align: left;
+    margin-bottom: 20px;
+">
+        
+                        <div class="customer-step-info-description-container customer-step-info-description-default" style="
+    margin-top: 20px;
+    margin-bottom: 0;
+">
+                        <div class="customer-step-info-description-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="7" r="1" fill="#00dfc4"></circle>
+                                <path d="M11 10H12V17M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#00dfc4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </div>
+                        <div class="customer-step-info-description" id="customer-step-info-description-validation">
+Please provide the payer’s details from which the deposit will be made to ensure the fastest possible processing time.
+<br>
+</div>
+                    </div></div>
+                        </div>
+                    </div>
+                    <div class="payment-form-container">
+                        <div class="fields-section">
+                            <div class="field-bottom field hidden">
+                                <label for="recipient-name" class="label">Choose your bank
+</label>
+
+                                <select name="banks" id="selectBanks" style="
+    width: 100%;
+    height: 40px;
+    padding: 0 0 0 12px;
+    font-size: 16px;
+    background: #8de7f614;
+    border: 1px solid #00dfc4;
+    border-radius: 8px;
+    margin: 0;
+    color: white;
+">
+<option value="" disabled selected>Select</option>
+<option value="100">HSBC</option>
+<option value="101">RaboBank</option>
+<option value="102">AMP</option>
+<option value="103">ANZ</option>
+<option value="104">Australian Military Bank</option>
+<option value="105">Australian Unity</option>
+<option value="106">Bank Australia</option>
+<option value="107">Bank First</option>
+<option value="108">Bank of Melbourne</option>
+<option value="109">Bank of us</option>
+<option value="110">Bank SA</option>
+<option value="111">BankVIC</option>
+<option value="112">Bankwest</option>
+<option value="113">BCU</option>
+<option value="114">BDCU Alliance Bank</option>
+<option value="115">Bendigo and Adelaide Bank</option>
+<option value="116">Beyond Bank Australia</option>
+<option value="117">Border Bank</option>
+<option value="118">Citi</option>
+<option value="119">Coastline</option>
+<option value="120">CommBank</option>
+<option value="121">Community First</option>
+<option value="122">Credit Union SA</option>
+<option value="123">Defence Bank</option>
+<option value="124">Easy Street Financial Services</option>
+<option value="125">Family First Credit Union</option>
+<option value="126">Firefighters Mutual Bank</option>
+<option value="127">G&C Mutual Bank</option>
+<option value="128">Goulburn Murray Credit Union</option>
+<option value="129">Greater Bank</option>
+<option value="130">Great Southern Bank</option>
+<option value="131">Heritage Bank</option>
+<option value="132">Horizon Bank</option>
+<option value="133">Hume Bank</option>
+<option value="134">Hunter United</option>
+<option value="135">Illawarra Credit Union</option>
+<option value="136">imb Bank</option>
+<option value="137">ING</option>
+<option value="138">Macquarie Bank</option>
+<option value="139">ME</option>
+<option value="140">MOVE</option>
+<option value="141">MyState</option>
+<option value="142">NAB</option>
+<option value="143">Newcastle Permanent</option>
+<option value="144">Northern Inland Credit Union</option>
+<option value="145">Orange Credit Union</option>
+<option value="146">P&N Bank</option>
+<option value="147">People's Choice Credit Union</option>
+<option value="148">Police Bank</option>
+<option value="149">Police Credit Union</option>
+<option value="150">QBANK</option>
+<option value="151">Qudos Bank</option>
+<option value="152">Queensland Country Credit Union</option>
+<option value="153">RACQ Bank</option>
+<option value="154">Regional Australia Bank</option>
+<option value="155">Reliance Bank</option>
+<option value="156">Rural Bank</option>
+<option value="157">Service One Alliance Bank</option>
+<option value="158">South West Credit Union</option>
+<option value="159">St.George</option>
+<option value="160">Suncorp</option>
+<option value="161">Teachers Mutual Bank</option>
+<option value="162">The Mac</option>
+<option value="163">The Mutual</option>
+<option value="164">UniBank</option>
+<option value="165">Unity Bank</option>
+<option value="166">Ubank</option>
+<option value="167">UP Bank</option>
+<option value="168">Westpac</option>
+</select>
+                                <div class="copy-address" style="display:none;">
+                                    <div class="copy-done">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <rect width="20" height="20" rx="10" fill="#00dfc4"></rect>
+                                            <path d="M4.1665 11.6667L6.86067 13.6875C7.03264 13.8164 7.24777 13.874 7.46114 13.848C7.67451 13.8221 7.8696 13.7147 8.00567 13.5483L14.9998 5" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="copy">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.4 6.4V4.6C6.4 2.61177 8.01177 1 10 1L15.4 1C17.3882 1 19 2.61177 19 4.6V10C19 11.9882 17.3882 13.6 15.4 13.6H13.6M6.4 6.4H4.6C2.61177 6.4 1 8.01177 1 10V15.4C1 17.3882 2.61177 19 4.6 19H10C11.9882 19 13.6 17.3882 13.6 15.4V13.6M6.4 6.4H10C11.9882 6.4 13.6 8.01177 13.6 10V13.6" stroke="#00dfc4" stroke-width="1.5" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="customer-step-info customer-step-info-name field">
+                                <label for="step-info-input" class="customer-step-info-label">Account holder full name
+</label>
+                                <div class="customer-step-info-input">
+                                    <input id="step-info-input" placeholder="Enter account holder full name" style="color: white;" autocomplete="username" name="name">
+                                    <div class="edit-icon">
+                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M13.818 2.32638L11.5828 0.167297C11.4989 0.0841898 11.3879 0.031153 11.2719 0.0102295L11.2711 0.00975211C11.0832 -0.0264241 10.8905 0.0400617 10.7559 0.175771L9.02778 1.90972L12.0581 4.93566L13.8294 3.15875C14.0607 2.92644 14.0562 2.55015 13.8196 2.32292L13.818 2.32638ZM7.64525 3.30006L1.3738 9.5953L0 14L4.43785 12.5768L10.6728 6.32349L7.64525 3.30006Z" fill="#ffffff1a"/>
+                                            <line x1="7" y1="13.5" x2="14" y2="13.5" stroke="#ffffff1a"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="field-value-error field-value field-value-info-code" style="
+    color: #ff6565;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    padding-top: 5px;
+    font-size: 12px;
+    display: none;
+">*Please enter valid value.
+</p>
+                            </div>
+                         <div class="customer-step-info customer-step-info-name field hidden">
+                                <label for="step-info-input" class="customer-step-info-label">Your bank account number
+</label>
+                                <div class="customer-step-info-input">
+                                    <input id="step-info-bank-number" placeholder="Enter bank account number" style="color: white;font-size: 16px;" autocomplete="username" name="name">
+                                    <div class="edit-icon">
+                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M13.818 2.32638L11.5828 0.167297C11.4989 0.0841898 11.3879 0.031153 11.2719 0.0102295L11.2711 0.00975211C11.0832 -0.0264241 10.8905 0.0400617 10.7559 0.175771L9.02778 1.90972L12.0581 4.93566L13.8294 3.15875C14.0607 2.92644 14.0562 2.55015 13.8196 2.32292L13.818 2.32638ZM7.64525 3.30006L1.3738 9.5953L0 14L4.43785 12.5768L10.6728 6.32349L7.64525 3.30006Z" fill="#ffffff1a"/>
+                                            <line x1="7" y1="13.5" x2="14" y2="13.5" stroke="#ffffff1a"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="field-value-error field-value field-value-info-code" style="
+    color: #ff6565;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    padding-top: 5px;
+    font-size: 12px;
+    display: none;
+">*Please enter valid value.
+</p>
+                            </div>
+                            <div class="customer-step-info customer-step-info-name field">
+                                <label for="step-info-input" class="customer-step-info-label">Your PayID
+</label>
+                                <div class="customer-step-info-input">
+                                    <input id="step-info-pay-id" placeholder="Enter PayID" style="color: white;    font-size: 16px;" autocomplete="username" name="name">
+                                    <div class="edit-icon">
+                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M13.818 2.32638L11.5828 0.167297C11.4989 0.0841898 11.3879 0.031153 11.2719 0.0102295L11.2711 0.00975211C11.0832 -0.0264241 10.8905 0.0400617 10.7559 0.175771L9.02778 1.90972L12.0581 4.93566L13.8294 3.15875C14.0607 2.92644 14.0562 2.55015 13.8196 2.32292L13.818 2.32638ZM7.64525 3.30006L1.3738 9.5953L0 14L4.43785 12.5768L10.6728 6.32349L7.64525 3.30006Z" fill="#ffffff1a"/>
+                                            <line x1="7" y1="13.5" x2="14" y2="13.5" stroke="#ffffff1a"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <p class="field-value-error field-value field-value-info-code" style="
+    color: #ff6565;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    padding-top: 5px;
+    font-size: 12px;
+    display: none;
+">*Please enter valid value.
+</p>
+                            </div>
+                    </div>
+                                                        <div class="customer-step-info-description-container customer-step-info-description-default" id="customer-step-info-description-validation-required" style="
+    margin-top: 10px;
+    margin-bottom: 20px;
+    display:none;
+">
+                        <div class="customer-step-info-description-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="7" r="1" fill="#00dfc4"/>
+                                <path d="M11 10H12V17M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#00dfc4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="customer-step-info-description">Please fill in all fields.</div>
+                    </div>
+                </div>
+            </div>
+                <div class="payment-form-container-bottom" id="step-main-form-bottom">
+                    <div id="deeplinks" class="bank-list-container hidden">
+                                        <div class="bank-list-description">Haga clic para abrir la aplicación si ve su banco aquí                                        </div>
+                                        <div class="bank-list-icons">
+                                            <a href="mercadopago://withdraw" target="_blank" class="bank-list-icon">
+                                                <img src="../assets/bank1.png" alt="Bank">
+                                            </a>
+                                        </div>
+                                    </div>
+                    <div class="payment-form-container-bottom-deposit">
+                        <div class="payment-form-container-bottom-deposit-button " id="step-form-button-submit-payment">Go to payment</div>
+                    </div>
+                    <!--<div class="payment-form-container-bottom-redirect">-->
+                    <!--    <a id="redirectUrlFirst" href="#">Volver al sitio</a>-->
+                    <!--</div>-->
+                </div>
+                <div class="result-main-container result-main-container-sucess" id="step-form-next-step">
+                    <div class="result-main-form-container">
+                        <div class="result-main-form">
+                            <div class="result-form-container">
+                                <div class="result-main-section">
+                                    <div class="result-icon-container">
+                                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <mask id="mask0_2311_702" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+                                                <rect width="64" height="64" fill="#D9D9D9"/>
+                                            </mask>
+                                            <g mask="url(#mask0_2311_702)">
+                                                <path d="M32 5C46.9117 5 59 17.0883 59 32C59 46.9117 46.9117 59 32 59C17.0883 59 5 46.9117 5 32C5 17.0883 17.0883 5 32 5ZM31.5635 13.999C30.6958 14.0036 29.9958 14.7445 30 15.6533L30.0859 34.2041C30.086 34.2083 30.0859 34.2126 30.0859 34.2168C30.1092 34.7959 30.0725 35.2049 30.3906 35.6074L41.3076 49.4219C41.8426 50.0987 42.801 50.1942 43.4482 49.6357C44.0953 49.0772 44.1862 48.0762 43.6514 47.3994L33.2285 34.21C33.2286 34.2028 33.2285 34.1956 33.2285 34.1885L33.1426 15.6377C33.1384 14.7287 32.4314 13.9946 31.5635 13.999Z" fill="#FAA61A"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="result-title">The transaction payment is being verified</div>
+                                    <div class="result-description">
+                                        Please contact Customer Service if your transaction does not process within a few minutes.
+                                    </div>
+                                    <div class="result-button">
+                                        <div class="submit-button-section">
+                                            <a id="redirectUrl" style="text-decoration: none;" class="button result-button step-form-button-submit" type="button" href="null">
+                                                Return to the site
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-main-container result-main-container-error" id="step-form-next-step-error">
+                    <div class="result-main-form-container">
+                        <div class="result-main-form">
+                            <div class="result-form-container">
+                                <div class="result-main-section">
+                                    <div class="result-icon-container">
+                                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <mask id="mask0_2311_702" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+                                                <rect width="64" height="64" fill="#D9D9D9"/>
+                                            </mask>
+                                            <g mask="url(#mask0_2311_702)">
+                                                <path d="M32 5C46.9117 5 59 17.0883 59 32C59 46.9117 46.9117 59 32 59C17.0883 59 5 46.9117 5 32C5 17.0883 17.0883 5 32 5ZM31.5635 13.999C30.6958 14.0036 29.9958 14.7445 30 15.6533L30.0859 34.2041C30.086 34.2083 30.0859 34.2126 30.0859 34.2168C30.1092 34.7959 30.0725 35.2049 30.3906 35.6074L41.3076 49.4219C41.8426 50.0987 42.801 50.1942 43.4482 49.6357C44.0953 49.0772 44.1862 48.0762 43.6514 47.3994L33.2285 34.21C33.2286 34.2028 33.2285 34.1956 33.2285 34.1885L33.1426 15.6377C33.1384 14.7287 32.4314 13.9946 31.5635 13.999Z" fill="#FAA61A"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="result-title">Transaction payment is being checked</div>
+                                    <div class="result-description">
+                                        Please contact Customer Support if your transaction is not processed within a few minutes
+                                    </div>
+                                    <div class="result-button">
+                                        <div class="submit-button-section">
+                                            <a id="redirectUrlError" style="text-decoration: none;" class="button result-button step-form-button-submit" type="button" href="null">
+                                                Volver al sitio
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="payment-form-main-container" id="payment-form-main-container">
+                <div class="payment-container" id="step-main-form">
+                    <div class="payment-form-header">
+                        <div class="payment-form-logo-container">
+                            <div class="payment-form-logo">
+                                <img src="assets/payid.png" alt="logo" style="
+    width: 100px;
+">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="payment-form-amount-container">
+                        <div class="payment-form-amount step-main-form-heading-amount">
+                            <h1 style="
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+">AU$<span id="customer-amount-number">25000.00</span><div class="copy-amount" style="
+    display: flex;
+    justify-content: center;
+    align-items: center;
+">
+                                    <div class="copy-done">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <rect width="20" height="20" rx="10" fill="#00dfc4"></rect>
+                                            <path d="M4.1665 11.6667L6.86067 13.6875C7.03264 13.8164 7.24777 13.874 7.46114 13.848C7.67451 13.8221 7.8696 13.7147 8.00567 13.5483L14.9998 5" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="copy">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.4 6.4V4.6C6.4 2.61177 8.01177 1 10 1L15.4 1C17.3882 1 19 2.61177 19 4.6V10C19 11.9882 17.3882 13.6 15.4 13.6H13.6M6.4 6.4H4.6C2.61177 6.4 1 8.01177 1 10V15.4C1 17.3882 2.61177 19 4.6 19H10C11.9882 19 13.6 17.3882 13.6 15.4V13.6M6.4 6.4H10C11.9882 6.4 13.6 8.01177 13.6 10V13.6" stroke="#00dfc4" stroke-width="1.5" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div></h1>
+                        </div>
+                    </div>
+                    <p class="field-label field-label-notification" style="
+                                    font-size: 12px;
+                                    color: #00dfc4;
+                                    font-weight: 600;
+                                ">Please make a transfer using the payment details stated below:</p>
+                    <div class="payment-form-container">
+                        <div class="fields-section">
+                            <div class="field-bottom field">
+                                <label for="recipient-name" class="label">Recipient's Name
+</label>
+                                <p id="recipient-name" class="input-field">Recipient's Name</p>
+                                <div class="copy-recipient hidden">
+                                    <div class="copy-done">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                            <rect width="20" height="20" rx="10" fill="#00dfc4"></rect>
+                                            <path d="M4.1665 11.6667L6.86067 13.6875C7.03264 13.8164 7.24777 13.874 7.46114 13.848C7.67451 13.8221 7.8696 13.7147 8.00567 13.5483L14.9998 5" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="copy">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.4 6.4V4.6C6.4 2.61177 8.01177 1 10 1L15.4 1C17.3882 1 19 2.61177 19 4.6V10C19 11.9882 17.3882 13.6 15.4 13.6H13.6M6.4 6.4H4.6C2.61177 6.4 1 8.01177 1 10V15.4C1 17.3882 2.61177 19 4.6 19H10C11.9882 19 13.6 17.3882 13.6 15.4V13.6M6.4 6.4H10C11.9882 6.4 13.6 8.01177 13.6 10V13.6" stroke="#00dfc4" stroke-width="1.5" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="recipient-bank-name" class="label">Recipient's Bank Name
+</label>
+                                <div class="recipient-bank-name-input">
+                                    <p id="recipient-bank-name" class="input-field">0000000000000123456789</p>
+        
+                                    <div class="copy-address hidden">
+                                        <div class="copy-done">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <rect width="20" height="20" rx="10" fill="#00dfc4"></rect>
+                                                <path d="M4.1665 11.6667L6.86067 13.6875C7.03264 13.8164 7.24777 13.874 7.46114 13.848C7.67451 13.8221 7.8696 13.7147 8.00567 13.5483L14.9998 5" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="copy">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6.4 6.4V4.6C6.4 2.61177 8.01177 1 10 1L15.4 1C17.3882 1 19 2.61177 19 4.6V10C19 11.9882 17.3882 13.6 15.4 13.6H13.6M6.4 6.4H4.6C2.61177 6.4 1 8.01177 1 10V15.4C1 17.3882 2.61177 19 4.6 19H10C11.9882 19 13.6 17.3882 13.6 15.4V13.6M6.4 6.4H10C11.9882 6.4 13.6 8.01177 13.6 10V13.6" stroke="#00dfc4" stroke-width="1.5" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="payment-id" id="payment-id-label" class="label">Recipient's ABN/ACN Number (Other)
+</label>
+                                <div class="pocket-address-input">
+                                    <p id="payment-id" class="input-field">0000000000000123456789</p>
+        
+                                    <div class="copy-address">
+                                        <div class="copy-done">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <rect width="20" height="20" rx="10" fill="#00dfc4"></rect>
+                                                <path d="M4.1665 11.6667L6.86067 13.6875C7.03264 13.8164 7.24777 13.874 7.46114 13.848C7.67451 13.8221 7.8696 13.7147 8.00567 13.5483L14.9998 5" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="copy">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6.4 6.4V4.6C6.4 2.61177 8.01177 1 10 1L15.4 1C17.3882 1 19 2.61177 19 4.6V10C19 11.9882 17.3882 13.6 15.4 13.6H13.6M6.4 6.4H4.6C2.61177 6.4 1 8.01177 1 10V15.4C1 17.3882 2.61177 19 4.6 19H10C11.9882 19 13.6 17.3882 13.6 15.4V13.6M6.4 6.4H10C11.9882 6.4 13.6 8.01177 13.6 10V13.6" stroke="#00dfc4" stroke-width="1.5" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field hidden">
+                                <label for="payment-id" class="label">BSB:</label>
+                                <div class="pocket-address-input-iban">
+                                    <p id="input-iban" class="input-field">0000000000000123456789</p>
+        
+                                    <div class="copy-iban">
+                                        <div class="copy-done">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <rect width="20" height="20" rx="10" fill="#00dfc4"></rect>
+                                                <path d="M4.1665 11.6667L6.86067 13.6875C7.03264 13.8164 7.24777 13.874 7.46114 13.848C7.67451 13.8221 7.8696 13.7147 8.00567 13.5483L14.9998 5" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="copy">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6.4 6.4V4.6C6.4 2.61177 8.01177 1 10 1L15.4 1C17.3882 1 19 2.61177 19 4.6V10C19 11.9882 17.3882 13.6 15.4 13.6H13.6M6.4 6.4H4.6C2.61177 6.4 1 8.01177 1 10V15.4C1 17.3882 2.61177 19 4.6 19H10C11.9882 19 13.6 17.3882 13.6 15.4V13.6M6.4 6.4H10C11.9882 6.4 13.6 8.01177 13.6 10V13.6" stroke="#00dfc4" stroke-width="1.5" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label for="payment-id" class="label">Reference code:</label>
+                                <div class="pocket-address-input-reference-code">
+                                    <p id="input-reference-code" class="input-field">0000000000000123456789</p>
+        
+                                    <div class="copy-address">
+                                        <div class="copy-done">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                <rect width="20" height="20" rx="10" fill="#00dfc4"></rect>
+                                                <path d="M4.1665 11.6667L6.86067 13.6875C7.03264 13.8164 7.24777 13.874 7.46114 13.848C7.67451 13.8221 7.8696 13.7147 8.00567 13.5483L14.9998 5" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="copy">
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6.4 6.4V4.6C6.4 2.61177 8.01177 1 10 1L15.4 1C17.3882 1 19 2.61177 19 4.6V10C19 11.9882 17.3882 13.6 15.4 13.6H13.6M6.4 6.4H4.6C2.61177 6.4 1 8.01177 1 10V15.4C1 17.3882 2.61177 19 4.6 19H10C11.9882 19 13.6 17.3882 13.6 15.4V13.6M6.4 6.4H10C11.9882 6.4 13.6 8.01177 13.6 10V13.6" stroke="#00dfc4" stroke-width="1.5" stroke-linejoin="round"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                
+                                <p class="field-value field-value-info-code" style="
+    color: rgb(225, 120, 57);
+">*Use this code as your deposit reference to ensure credit to your account.
+</p>
+<div class="payment-form-language-container" style="
+    text-align: left;
+    margin-top: 20px;
+">
+                 <div class="payment-form-container-bottom-links attention-link">
+                        <div id="btn-modal">
+                            <strong style="
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="7" r="1" fill="#223243"></circle>
+                                <path d="M11 10H12V17M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#223243" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>ATTENTION</strong>
+                        </div>
+                    </div>
+        
+                        <div class="customer-step-info-description-container customer-step-info-description-default attention-block-container" style="
+    margin-top: 20px;
+    margin-bottom: 0;
+">
+                        <div class="customer-step-info-description-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="7" r="1" fill="#00dfc4"></circle>
+                                <path d="M11 10H12V17M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#00dfc4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </div>
+                        <div class="customer-step-info-description" id="customer-step-info-description-validation">
+
+
+
+
+<strong style="
+    display: block;
+">ATTENTION</strong><ul style="
+    padding: 0;
+    list-style: none;
+    margin-top: 5px;
+">
+    <li>- In the payment reference field, enter only the provided code: <span id="refcode"></span></li>
+<li>- do <strong>NOT</strong> include any additional words, especially those related to gambling, betting, casino, bet, or games — this may cause your transaction to be delayed or blocked.</li><li>- use <strong>individual</strong> accounts only. <strong>Corporate/business accounts are not allowed.</strong></li>
+<li id="deposit-instructions-li">- to top up via PayID, select the "Others" section — the deposit is made using an ACN number.</li>
+<li>- <strong>cash deposits via ATM machines are strictly not accepted.</strong></li>
+</ul><strong style="
+    display: block;
+    margin-bottom: 5px;
+">IMPORTANT</strong>
+Please transfer the funds <strong>within 10 minutes</strong> using the payment details provided <strong>before submitting a request.</strong>
+    
+</div>
+                    </div></div>
+                            </div>
+                            <div class="field-bottom field recipient-alias-info-container" style="
+    display: none;
+">
+                                            <label for="recipient-name" class="label">Alias</label>
+                                            <div class="recipient-alias-info">
+                                                <p id="recipient-alias" class="input-field">20455557713.claropay</p>
+                                                <div class="copy-address">
+                                                    <div class="copy-done">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                                            <rect width="20" height="20" rx="10" fill="#00dfc4"></rect>
+                                                            <path d="M4.1665 11.6667L6.86067 13.6875C7.03264 13.8164 7.24777 13.874 7.46114 13.848C7.67451 13.8221 7.8696 13.7147 8.00567 13.5483L14.9998 5" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="copy">
+                                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M6.4 6.4V4.6C6.4 2.61177 8.01177 1 10 1L15.4 1C17.3882 1 19 2.61177 19 4.6V10C19 11.9882 17.3882 13.6 15.4 13.6H13.6M6.4 6.4H4.6C2.61177 6.4 1 8.01177 1 10V15.4C1 17.3882 2.61177 19 4.6 19H10C11.9882 19 13.6 17.3882 13.6 15.4V13.6M6.4 6.4H10C11.9882 6.4 13.6 8.01177 13.6 10V13.6" stroke="#00dfc4" stroke-width="1.5" stroke-linejoin="round"></path>
+                                            </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                        
+                            <div class="customer-step-info-description-container-success customer-step-info-description-container"style="background: #ffffff1a;">
+                                <div class="customer-step-info-description-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="7" r="1" fill="#00dfc4"/>
+                                        <path d="M11 10H12V17M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#00dfc4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="customer-step-info-description">Thank you for your information, which will help us confirm your payment in a few seconds. Please wait...</div>
+                            </div>
+        
+                    
+    
+                    </div>
+                </div>
+            </div>
+                <div class="payment-form-container-bottom" id="step-main-form-bottom">
+                    <div id="deeplinks" class="bank-list-container hidden">
+                                        <div class="bank-list-description">Haga clic para abrir la aplicación si ve su banco aquí                                        </div>
+                                        <div class="bank-list-icons">
+                                            <a href="mercadopago://withdraw" target="_blank" class="bank-list-icon">
+                                                <img src="../assets/bank1.png" alt="Bank">
+                                            </a>
+                                        </div>
+                                    </div>
+                    <div class="payment-form-container-bottom-deposit">
+                        <div class="payment-form-container-bottom-deposit-button step-form-button-submit" id="step-form-button-submit">I have paid</div>
+                    </div>
+                    <!--<div class="payment-form-container-bottom-redirect">-->
+                    <!--    <a id="redirectUrlFirst" href="#">Volver al sitio</a>-->
+                    <!--</div>-->
+                </div>
+                <div class="result-main-container result-main-container-sucess" id="step-form-next-step">
+                    <div class="result-main-form-container">
+                        <div class="result-main-form">
+                            <div class="result-form-container">
+                                <div class="result-main-section">
+                                    <div class="result-icon-container">
+                                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <mask id="mask0_2311_702" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+                                                <rect width="64" height="64" fill="#D9D9D9"/>
+                                            </mask>
+                                            <g mask="url(#mask0_2311_702)">
+                                                <path d="M32 5C46.9117 5 59 17.0883 59 32C59 46.9117 46.9117 59 32 59C17.0883 59 5 46.9117 5 32C5 17.0883 17.0883 5 32 5ZM31.5635 13.999C30.6958 14.0036 29.9958 14.7445 30 15.6533L30.0859 34.2041C30.086 34.2083 30.0859 34.2126 30.0859 34.2168C30.1092 34.7959 30.0725 35.2049 30.3906 35.6074L41.3076 49.4219C41.8426 50.0987 42.801 50.1942 43.4482 49.6357C44.0953 49.0772 44.1862 48.0762 43.6514 47.3994L33.2285 34.21C33.2286 34.2028 33.2285 34.1956 33.2285 34.1885L33.1426 15.6377C33.1384 14.7287 32.4314 13.9946 31.5635 13.999Z" fill="#FAA61A"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="result-title">The transaction payment is being verified</div>
+                                    <div class="result-description">
+                                        Please contact Customer Service if your transaction does not process within a few minutes.
+                                    </div>
+                                    <div class="result-button">
+                                        <div class="submit-button-section">
+                                            <a id="redirectUrl" style="text-decoration: none;" class="button result-button step-form-button-submit" type="button" href="null">
+                                                Return to the site
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="result-main-container result-main-container-error" id="step-form-next-step-error">
+                    <div class="result-main-form-container">
+                        <div class="result-main-form">
+                            <div class="result-form-container">
+                                <div class="result-main-section">
+                                    <div class="result-icon-container">
+                                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <mask id="mask0_2311_702" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+                                                <rect width="64" height="64" fill="#D9D9D9"/>
+                                            </mask>
+                                            <g mask="url(#mask0_2311_702)">
+                                                <path d="M32 5C46.9117 5 59 17.0883 59 32C59 46.9117 46.9117 59 32 59C17.0883 59 5 46.9117 5 32C5 17.0883 17.0883 5 32 5ZM31.5635 13.999C30.6958 14.0036 29.9958 14.7445 30 15.6533L30.0859 34.2041C30.086 34.2083 30.0859 34.2126 30.0859 34.2168C30.1092 34.7959 30.0725 35.2049 30.3906 35.6074L41.3076 49.4219C41.8426 50.0987 42.801 50.1942 43.4482 49.6357C44.0953 49.0772 44.1862 48.0762 43.6514 47.3994L33.2285 34.21C33.2286 34.2028 33.2285 34.1956 33.2285 34.1885L33.1426 15.6377C33.1384 14.7287 32.4314 13.9946 31.5635 13.999Z" fill="#FAA61A"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="result-title">Transaction payment is being checked</div>
+                                    <div class="result-description">
+                                        Please contact Customer Support if your transaction is not processed within a few minutes
+                                    </div>
+                                    <div class="result-button">
+                                        <div class="submit-button-section">
+                                            <a id="redirectUrlError" style="text-decoration: none;" class="button result-button step-form-button-submit" type="button" href="null">
+                                                Volver al sitio
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="payment-form-container-bottom-deposit-button step-form-button-submit" id="step-form-button-scroll-bottom" style="
+        box-shadow: none;
+    border: none;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    right: auto;
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    max-width: 768px;
+    background: #1A1D1B;
+    z-index: 100;
+">Confirm payment<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" style="
+    width: 20px;
+    height: 20px;
+"><polyline points="112 268 256 412 400 268" style="fill:none;stroke: #00dfc4;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"></polyline><line x1="256" y1="392" x2="256" y2="100" style="fill:none;stroke: #00dfc4;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px"></line></svg></button>
+            </div>
+            <div id="step-form-next-step-main" class="step-form step-form-next-step">
+                <div class="payment-container">
+                    <div class="payment-form-header">
+                        <div class="payment-form-logo-container">
+                            <div class="payment-form-logo">
+                                <img src="assets/payid.png" alt="logo" style="
+    width: 100px;
+">
+                            </div>
+                        </div>
+            
+                    </div>
+                    <div class="form-info-container payment-form-container">
+                        <div class="fields-section fields-section-next-step">
+                            <div class="field-info-container field-info-container-payment-section" style="
+    flex-direction: column;
+    display:none;
+">
+                            
+                                <div class="result-info-value-bank-name">
+                                <p class="field-label">Bank Name:</p>
+                                <div class="result-info-value"><p class="field-value" id="customer-bank-name">HSBC</p><div class="result-info-value-copy"><svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div><div class="copy-done"><?xml version="1.0" encoding="iso-8859-1"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 80.588 61.158" style="enable-background:new 0 0 80.588 61.158;" xml:space="preserve">
+<path style="fill:white;" d="M29.658,61.157c-1.238,0-2.427-0.491-3.305-1.369L1.37,34.808c-1.826-1.825-1.826-4.785,0-6.611
+	c1.825-1.826,4.786-1.827,6.611,0l21.485,21.481L72.426,1.561c1.719-1.924,4.674-2.094,6.601-0.374
+	c1.926,1.72,2.094,4.675,0.374,6.601L33.145,59.595c-0.856,0.959-2.07,1.523-3.355,1.56C29.746,61.156,29.702,61.157,29.658,61.157z
+	"/>
+</svg></div></div>
+                            </div>
+                                <div class="result-info-value-bank-number">
+                                <p class="field-label">Bank ACN Number:</p>
+                                <div class="result-info-value">
+                                <p class="field-value" id="customer-number">0000085700204555577132</p>
+                                <div class="result-info-value-copy"><svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+                                <div class="copy-done"><?xml version="1.0" encoding="iso-8859-1"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 80.588 61.158" style="enable-background:new 0 0 80.588 61.158;" xml:space="preserve">
+<path style="fill:white;" d="M29.658,61.157c-1.238,0-2.427-0.491-3.305-1.369L1.37,34.808c-1.826-1.825-1.826-4.785,0-6.611
+	c1.825-1.826,4.786-1.827,6.611,0l21.485,21.481L72.426,1.561c1.719-1.924,4.674-2.094,6.601-0.374
+	c1.926,1.72,2.094,4.675,0.374,6.601L33.145,59.595c-0.856,0.959-2.07,1.523-3.355,1.56C29.746,61.156,29.702,61.157,29.658,61.157z
+	"/>
+</svg></div>
+                                </div>
+                            </div>
+                            <div class="result-info-value-recipient-name">
+                                <p class="field-label">Recipient Name:</p>
+                                <div class="result-info-value">
+                                <p class="field-value" id="customer-name">Cristian Rodriguez</p>
+                                <div class="result-info-value-copy"><svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+                                <div class="copy-done"><?xml version="1.0" encoding="iso-8859-1"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 80.588 61.158" style="enable-background:new 0 0 80.588 61.158;" xml:space="preserve">
+<path style="fill:white;" d="M29.658,61.157c-1.238,0-2.427-0.491-3.305-1.369L1.37,34.808c-1.826-1.825-1.826-4.785,0-6.611
+	c1.825-1.826,4.786-1.827,6.611,0l21.485,21.481L72.426,1.561c1.719-1.924,4.674-2.094,6.601-0.374
+	c1.926,1.72,2.094,4.675,0.374,6.601L33.145,59.595c-0.856,0.959-2.07,1.523-3.355,1.56C29.746,61.156,29.702,61.157,29.658,61.157z
+	"/>
+</svg></div>
+                                </div>
+                            </div>
+                            <div class="result-info-value-reference-code">
+                                <p class="field-label">Reference code:</p>
+                                <div class="result-info-value">
+                                <p class="field-value" id="order-id">000000</p>
+                                <div class="result-info-value-copy"><svg xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+                                <div class="copy-done"><?xml version="1.0" encoding="iso-8859-1"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 80.588 61.158" style="enable-background:new 0 0 80.588 61.158;" xml:space="preserve">
+<path style="fill:white;" d="M29.658,61.157c-1.238,0-2.427-0.491-3.305-1.369L1.37,34.808c-1.826-1.825-1.826-4.785,0-6.611
+	c1.825-1.826,4.786-1.827,6.611,0l21.485,21.481L72.426,1.561c1.719-1.924,4.674-2.094,6.601-0.374
+	c1.926,1.72,2.094,4.675,0.374,6.601L33.145,59.595c-0.856,0.959-2.07,1.523-3.355,1.56C29.746,61.156,29.702,61.157,29.658,61.157z
+	"/>
+</svg></div>
+                                </div>
+                            </div>
+                        
+                            </div>
+                        
+                        </div>
+                        <div class="field-info-container field-info-container-status">
+                            <p class="field-label">Payment Status</p>
+                            <div class="customer-step-info-label status-process" id="status-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none" style="display: flex;">
+                                    <rect x="9" y="0.5" width="2" height="5" rx="1" fill="#CED4DA"></rect>
+                                    <rect x="9" y="15.5" width="2" height="5" rx="1" fill="#CED4DA"></rect>
+                                    <rect y="11.5" width="2" height="5" rx="1" transform="rotate(-90 0 11.5)" fill="#CED4DA"></rect>
+                                    <rect x="15" y="11.5" width="2" height="5" rx="1" transform="rotate(-90 15 11.5)" fill="#CED4DA"></rect>
+                                    <rect x="2.33984" y="4.01807" width="2" height="5" rx="1" transform="rotate(-45 2.33984 4.01807)" fill="#CED4DA"></rect>
+                                    <rect x="12.9463" y="14.6248" width="2" height="5" rx="1" transform="rotate(-45 12.9463 14.6248)" fill="#CED4DA"></rect>
+                                    <rect x="3.51807" y="18.1604" width="2" height="5" rx="1" transform="rotate(-135 3.51807 18.1604)" fill="#15171A"></rect>
+                                    <rect x="14.125" y="7.55371" width="2" height="5" rx="1" transform="rotate(-135 14.125 7.55371)" fill="#CED4DA"></rect>
+                                </svg>
+                                <p class="field-value">In progress</p>
+                            </div>
+                        </div>
+                        <div class="customer-step-info-proof field">
+                            <label for="step-info-input-proof" class="customer-step-info-label">Transaction proof (png, jpeg, pdf):                                    </label>
+                            <div class="customer-step-info-input-proof customer-step-info-input" style="
+    margin-top: 10px;
+">
+                                <input id="step-info-input-proof" type="file" id="avatar" name="avatar" accept="image/png, image/jpeg, application/pdf" / style="
+    padding: 0;
+    background: transparent;
+    border: none;
+    height: max-content;
+        border-radius: 0;
+">
+
+                            </div>
+                            <div style="
+    font-size: 10px;
+    margin-top: 8px;
+">Max file size is 30MB</div>
+                        </div>
+                        <div class="customer-step-info customer-step-info-tax-id field hidden">
+                            <label for="step-info-input-tax-id" class="customer-step-info-label">PayID Transaction No:                                    </label>
+                            <div class="customer-step-info-input-tax-id customer-step-info-input">
+                                <input id="step-info-input-tax-id" placeholder="PayID Transaction" autocomplete="taxid" name="name">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+                                    <path d="M5 14.5L8.233 16.925C8.43936 17.0797 8.69752 17.1487 8.95356 17.1176C9.2096 17.0865 9.44372 16.9577 9.607 16.758L18 6.5" stroke="#15B407" stroke-width="2" stroke-linecap="round"></path>
+                                </svg>
+                            </div>
+                            <p class="field-value-error field-value field-value-info-code" style="
+    color: #ff6565;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    padding-top: 5px;
+    font-size: 12px;
+    display: none;
+">*Please enter valid value.
+</p>
+                        </div>
+                        <div class="customer-step-info-description-container customer-step-info-description-default" style="
+    margin-top: 10px;
+    margin-bottom: 20px;
+">
+                        <div class="customer-step-info-description-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="7" r="1" fill="#00dfc4"/>
+                                <path d="M11 10H12V17M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#00dfc4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="customer-step-info-description" id="customer-step-info-description-validation">Please upload a transaction confirmation as an image (bank screenshot) or PDF receipt.</div>
+                    </div>
+                    </div>
+                    <div class="payment-form-container-bottom">
+                        <div class="payment-form-container-bottom-links">
+                            <div class="how-does-it-work" id="btn-modal-next">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="8" cy="8" r="8" fill="#4285F4"/>
+                                    <path d="M9.48145 11.3018L9.37402 11.7412C9.05176 11.8682 8.7946 11.9642 8.60254 12.0293C8.41048 12.0977 8.1875 12.1318 7.93359 12.1318C7.54297 12.1318 7.23861 12.0374 7.02051 11.8486C6.80566 11.6566 6.69824 11.4141 6.69824 11.1211C6.69824 11.0072 6.70638 10.8916 6.72266 10.7744C6.73893 10.654 6.76497 10.5189 6.80078 10.3691L7.20117 8.94336C7.23698 8.80664 7.26628 8.67806 7.28906 8.55762C7.3151 8.43392 7.32812 8.32161 7.32812 8.2207C7.32812 8.03841 7.29069 7.91146 7.21582 7.83984C7.14095 7.76823 6.99772 7.73242 6.78613 7.73242C6.68197 7.73242 6.57454 7.7487 6.46387 7.78125C6.35645 7.8138 6.26367 7.84473 6.18555 7.87402L6.29297 7.43457C6.55664 7.32715 6.80892 7.236 7.0498 7.16113C7.29069 7.08301 7.51855 7.04395 7.7334 7.04395C8.12077 7.04395 8.41862 7.13835 8.62695 7.32715C8.83854 7.5127 8.94434 7.75521 8.94434 8.05469C8.94434 8.11654 8.9362 8.22559 8.91992 8.38184C8.9069 8.53809 8.88086 8.68132 8.8418 8.81152L8.44141 10.2324C8.40885 10.3464 8.37956 10.4766 8.35352 10.623C8.32747 10.7695 8.31445 10.8802 8.31445 10.9551C8.31445 11.1439 8.35677 11.2725 8.44141 11.3408C8.52604 11.4092 8.67253 11.4434 8.88086 11.4434C8.97852 11.4434 9.08919 11.4271 9.21289 11.3945C9.33659 11.3587 9.42611 11.3278 9.48145 11.3018ZM9.58398 5.33984C9.58398 5.58724 9.48958 5.79883 9.30078 5.97461C9.11523 6.14714 8.89062 6.2334 8.62695 6.2334C8.36328 6.2334 8.13704 6.14714 7.94824 5.97461C7.75944 5.79883 7.66504 5.58724 7.66504 5.33984C7.66504 5.09245 7.75944 4.88086 7.94824 4.70508C8.13704 4.5293 8.36328 4.44141 8.62695 4.44141C8.89062 4.44141 9.11523 4.5293 9.30078 4.70508C9.48958 4.88086 9.58398 5.09245 9.58398 5.33984Z" fill="white"/>
+                                </svg>
+                                <p>How does it work?</p>
+                            </div>
+                        </div>
+                        <div id="deeplinks2" class="bank-list-container hidden">
+                            <div class="bank-list-description">Haga clic para abrir la aplicación si ve su banco aquí                                        </div>
+                            <div class="bank-list-icons">
+                                <a href="mercadopago://withdraw" target="_blank" class="bank-list-icon">
+                                    <img src="../assets/bank1.png" alt="Bank">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="payment-form-container-bottom-deposit">
+                            <button class="payment-form-container-bottom-deposit-button step-form-button-submit" id="step-form-button-submit-save" style="
+    box-shadow: none;
+    border: none;
+    width: 100%;
+" disabled >Confirm payment</div>
+                        </div>
+                        <!--<div class="payment-form-container-bottom-redirect">-->
+                        <!--    <a id="redirectUrlNext" href="#">Volver al sitio</a>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="modal">
+        <button class="modal-close-btn" id="close-btn"><svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"></path></svg></button>
+        <div class="step-info-section-container">
+    <div class="customer-step-info-description-container customer-step-info-description-default step-info-madal-content">
+                        <div class="customer-step-info-description" id="customer-step-info-description-validation">
+<strong style="
+    display: flex;
+    align-items: center;
+    gap: 10px;
+"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="7" r="1" fill="#00dfc4"></circle>
+                                <path d="M11 10H12V17M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#00dfc4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>ATTENTION</strong><ul style="
+    padding: 0;
+    list-style: none;
+    margin-top: 5px;
+">
+    <li><p>- In the payment reference field, enter only the provided code: <span id="refcode2">1155918254</span></p></li>
+<li><p>- do <strong>NOT</strong> include any additional words, especially those related to gambling, betting, casino, bet, or games — this may cause your transaction to be delayed or blocked.</p></li>
+<li><p>- <strong>cash deposits via ATM machines are strictly not accepted.</strong></p></li>
+<li><p id="deposit-instructions-p">- to top up via PayID, select the "Others" section — the deposit is made using an ACN number.</p></li>
+<li><p>- use <strong>individual</strong> accounts only. <strong>Corporate/business accounts are not allowed.</strong></p></li>
+</ul><strong style="
+    display: block;
+    margin-bottom: 5px;
+">IMPORTANT</strong>
+Please transfer the funds <strong>within 10 minutes</strong> using the payment details provided <strong>before submitting a request.</strong>
+    
+</div>
+                    </div>
+</div>
+
+    </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('btn-modal').addEventListener('click', function () {
+            document.getElementById('overlay').classList.add('is-visible');
+            document.getElementById('modal').classList.add('is-visible');
+            window.scrollTo({
+  top: 0,
+  behavior: "smooth",
+});
+        });
+
+        document.getElementById('close-btn').addEventListener('click', function () {
+            document.getElementById('overlay').classList.remove('is-visible');
+            document.getElementById('modal').classList.remove('is-visible');
+        });
+        document.getElementById('overlay').addEventListener('click', function () {
+            document.getElementById('overlay').classList.remove('is-visible');
+            document.getElementById('modal').classList.remove('is-visible');
+        });
+    });
+</script>
+<script src="../scripts/status.js.php?cacheBreaker=<?php echo rand(); ?>"></script>
+</body>
+</html>
